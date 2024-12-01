@@ -140,15 +140,18 @@ app.post("/chat", async (req, res) => {
     // Call the external chatbot service
     const chatbotResponse = await axios.post('https://starkshoot.fun/process/', { message: userMessage });
 
-    const messages = chatbotResponse.data.messages;
+    const messages = chatbotResponse.data;
 
-    console.log(messages)
-    
+    let messages_data = messages.messages
+
+    console.log(messages.messages)
+    console.log(messages.messages.length)
+
     // Loop through the messages and generate audio data
-    for (let i = 0; i < messages.length; i++) {
+    for (let i = 0; i < messages.messages.length; i++) {
       const message = messages[i];
 
-      console.log("message : ", message, "test :", message.text)
+      console.log(message.text)
 
       // Generate speech directly into Base64
       message.audio = await generateSpeech(message.text);

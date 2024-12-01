@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
- const backendUrl = "https://suzuka-ai-ten.vercel.app";
+ const backendUrl = "http://localhost:3000";
 
 const ChatContext = createContext();
 
