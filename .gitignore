@@ -20,6 +20,7 @@ local_settings.py
 # Virtual environments
 venv/
 env/
+myenv
 ENV/
 .venv/
 .virtualenv/
@@ -57,3 +58,5 @@ media/
 # dotenv or environment variables files
 .env
 *.env
+__pycache__/
+myenv/
