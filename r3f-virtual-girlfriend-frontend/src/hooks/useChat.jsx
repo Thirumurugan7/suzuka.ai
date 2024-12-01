@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
- const backendUrl = "https://virtual-gf-js.vercel.app";
+ const backendUrl = "https://suzuka-ai-ten.vercel.app";
 
 const ChatContext = createContext();
 

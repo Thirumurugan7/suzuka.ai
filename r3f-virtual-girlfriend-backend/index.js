@@ -16,7 +16,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']  // Specify which headers are allowed
 }));
 const port = 3000;
-
+app.options('*', cors()); 
 // Phoneme to Viseme mapping for morph target influences
 const corresponding = {
   A: "viseme_PP",
