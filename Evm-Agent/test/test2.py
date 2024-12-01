@@ -8,7 +8,7 @@ from langchain.prompts import PromptTemplate
 import re
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = ""
 
 # Function definitions that we will trigger
 def draw_graphic():
