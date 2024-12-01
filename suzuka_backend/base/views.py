@@ -6,6 +6,9 @@ from g4f import models, Provider
 from .LLM.MyLLM import G4FLLM
 from langchain.llms.base import LLM
 
+
+from base.utilities.agents import create_token, transfer_asset, get_balance, request_eth_from_faucet, deploy_nft, mint_nft, swap_assets, register_basename
+
 # Define the prompt
 prompt = '''
        functions=[
@@ -66,6 +69,12 @@ def Memory(llm) -> ConversationChain:
     Convomem.save_context({'role': 'system'}, {'content': SystemWork})
     return connector
 
+def function_exe(function, values):
+    if function == 'create_token':
+        return create_token(values[0], values[1], values[2])
+    else:
+        return "Function not found"
+
 # Function to process the response and extract the necessary data
 def handle_data(res):
     if '```' in res:
@@ -76,7 +85,8 @@ def handle_data(res):
         struct = res.split('@@')
         function_name = struct[0]
         function_values = struct[1].split('::')
-        return {function_name: function_values}
+        out = function_exe(function_name, function_values)
+        return {'message': out}
 
 # Django view to handle user input and respond with the appropriate JSON
 @csrf_exempt

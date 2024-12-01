@@ -1,0 +1,59 @@
+# Python Bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.log
+local_settings.py
+*.pot
+*.py[cod]
+
+# Django migrations
+**/migrations/*.py
+**/migrations/*.pyc
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.virtualenv/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Python packaging
+*.egg-info/
+*.egg
+*.dist-info/
+*.whl
+
+# Tests
+*.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.hypothesis/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Static files
+staticfiles/
+media/
+
+# dotenv or environment variables files
+.env
+*.env
