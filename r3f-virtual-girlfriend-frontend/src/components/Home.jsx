@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useOkto } from "okto-sdk-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { MessageSquare, RefreshCw, Settings, Menu } from 'lucide-react';
-import Robotlogo from "../Assets/robot 1.png";
+import Robotlogo from "../assets/robot 1.png";
 import backgroundImage from "../assets/HerpSection.png";
+import Icon from "../assets/icon.png";
+import { Rocket, Zap, Link, Bird, Coins, Gauge } from 'lucide-react';
+import Frame from "../assets/Frame.png";
 
 
 const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
@@ -31,16 +34,16 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat" 
+    <div className="min-h-screen w-full bg-cover mx-auto my-auto bg-no-repeat" 
     style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="container mx-auto px-4 py-8">
         {/* Navigation */}
         <nav className="flex justify-between items-center mb-12 relative">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg overflow-hidden">
+            <div className="w-8 h-8  rounded-lg overflow-hidden">
               <img src={Robotlogo} alt="Robot Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="font-bold text-xl">Suzuka AI</span>
+            <span className="font-semibold text-xl text-[#203754]">Suzuka AI</span>
           </div>
 
           <div className="flex items-center space-x-6">
@@ -117,14 +120,16 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
         </nav>
 
         {/* Hero Section */}
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <div className="bg-blue-100 p-8 rounded-xl shadow-lg">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Build <span className="italic">Swaps</span> and <span className="italic">Bridges</span>
+        <div className="max-w-4xl mx-auto text-center mb-6">
+          <div className="">
+            <h1 className="text-3xl md:text-5xl text-[#203754] font-bold mb-1">
+              Build <span className="italic font-semibold text-4xl">Swaps</span> and <span className="italic font-semibold text-4xl">Bridges</span>
               <br />Seamlessly with
-              <br />AI Powered
+              <br /><h1 className="flex justify-center">
+  AI <img className="h-14 mx-2" src={Icon} alt="" /> Powered
+</h1>
             </h1>
-            <p className="text-gray-600 mb-8">
+            <p className="text-[#25456F] ">
               Effortlessly bring your crypto ideas to life—launch
               <br className="hidden md:block" />memcoins, NFTs, swaps, and bridges with simple
               <br className="hidden md:block" />AI commands.
@@ -132,44 +137,71 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
           </div>
         </div>
 
+        <div className="flex justify-center mb-6">
+          <button className="bg-blue-600 text-white rounded-xl p-2">Get Started</button>
+        </div>
+
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="flex flex-col  md:flex-row space-x-2 h-[280px] w-full">
           {/* Feature 1 */}
-          <div className="bg-blue-600 text-white p-6 rounded-xl shadow-lg">
-            <h3 className="text-xl font-bold mb-2">Simplifying Crypto for Everyone</h3>
-            <p className="text-sm opacity-80">
-              Seamlessly create tokens, launch NFTs,
-              Create memcoins, NFTs, swaps, and more.
-            </p>
-            <button className="mt-4 bg-blue-700 px-4 py-2 rounded-lg text-sm hover:bg-blue-800">
-              Learn More
-            </button>
-          </div>
+          <div className=" rounded-3xl bg-gradient-to-br from-gray-900 to-blue-900 p-4 text-white">
+        <h1 className="text-2xl font-bold pt-4 ">
+          Simplifying Crypto for Everyone
+        </h1>
+        <p className="text-gray-300 py-3">
+          One command. Endless possibilities.
+          Create memecoins, NFTs, swaps, and more.
+        </p>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+          Beta Launch Now Live 🚀
+        </button>
+      </div>
 
           {/* Feature 2 */}
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="flex items-center space-x-2 mb-4">
-              <MessageSquare className="w-6 h-6 text-blue-600" />
-              <h3 className="font-semibold">AI Crypto Assistant</h3>
-            </div>
-            <button className="mt-4 border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-50">
-              Explore Features
-            </button>
-          </div>
+         <div >
+          <img src={Frame} className="h-[280px] w-[700px]" alt="" />
+         </div>
+
 
           {/* Feature 3 */}
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="flex justify-between mb-4">
-              <div className="flex items-center space-x-2">
-                <Settings className="w-6 h-6 text-blue-600" />
-                <span className="font-semibold">Protocol Support</span>
-              </div>
-              <RefreshCw className="w-6 h-6 text-blue-600" />
+          <div className="flex justify-between  rounded-3xl bg-gradient-to-br from-blue-50 to-blue-100 p-8">
+        <div className="bg-white rounded-xl p-6 mb-6 shadow-sm">
+          <div className="flex items-start ">
+            <div className="p-1 bg-blue-100 rounded-full">
+              <Bird className="w-4 h-4 text-blue-500 " /> 
             </div>
-            <div className="flex items-center space-x-2 mt-4">
-              <span className="text-sm text-gray-600">Speed Optimized</span>
+            <div>
+              <h3 className="font-semibold text-[12px]">AI Crypto Assistant Suggestion</h3>
+              <p className="text-[10px] text-gray-600 mt-1">
+                Launch a memecoin in seconds, optimized for scalability and security. All with a single AI command.
+              </p>
+              <button className="mt-4 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">
+                Deploy Now
+              </button>
             </div>
           </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-1 mt-1 lg:mt-0 lg:ml-2 w-full ">
+    {[
+      { icon: Zap, title: 'Instant Launch' },
+      { icon: Link, title: 'Multichain Support' },
+      { icon: Coins, title: 'Low Gas Costs' },
+      { icon: Gauge, title: 'Speed Optimized' },
+    ].map((feature, index) => (
+      <div
+        key={index}
+        className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center"
+      >
+        <div className="p-2 bg-gray-100 rounded-full">
+          <feature.icon className="w-3 h-3 text-gray-700" />
+        </div>
+        <span className="mt-2 text-[10px] font-medium text-gray-800">{feature.title}</span>
+      </div>
+    ))}
+  </div>
+
+      </div>
         </div>
       </div>
     </div>
