@@ -81,7 +81,6 @@ print(f"Agent wallet address: {agent_wallet.default_address.address_id}")
 def create_token(name, symbol, initial_supply):
     """
     Create a new ERC-20 token.
-    
     Args:
         name (str): The name of the token
         symbol (str): The symbol of the token

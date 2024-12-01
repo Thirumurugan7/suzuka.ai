@@ -5,7 +5,8 @@ from langchain.memory import ConversationBufferMemory
 from g4f import models, Provider
 from .LLM.MyLLM import G4FLLM
 from langchain.llms.base import LLM
-
+import requests
+import json
 
 from base.utilities.agents import create_token, transfer_asset, get_balance, request_eth_from_faucet, deploy_nft, mint_nft, swap_assets, register_basename
 
@@ -51,6 +52,37 @@ prompt = '''
     
 '''
 
+
+
+convert_prompt = '''
+    You are a virtual girlfriend.
+    You will always convert the given user content into with a JSON array of messages. You should convert With a maximum of 3 messages.
+    Each message has a text, facialExpression, and animation property.
+    The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
+    The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing, Rumba, Idle, Terrified, and Angry.
+    Note: just give the json content, don't give any unwanted content or char. I don't need .md content. Avoid ```json and ```
+'''
+def content_convert(usr_content):
+    response = requests.post(
+    url="https://api.red-pill.ai/v1/chat/completions",
+    headers={
+        "Authorization": "Bearer sk-lPrp67KbkKz8cojLOk0CvZvFgxGC5oOHRzRMAn6JnbQw8Nkz",
+    },
+    data=json.dumps({
+        "model": "gpt-4o",
+        "messages": [
+            {'role': 'system', 'content': convert_prompt},
+            {
+                "role": "user",
+                "content": usr_content
+            }
+        ]
+    })
+    )
+
+    return response.json().get('choices')[0].get('message').get('content')
+
+
 Convomem = ConversationBufferMemory()
 
 
@@ -80,24 +112,55 @@ def handle_data(res):
     if '```' in res:
         res = res.replace('```', "")
     if '~~' in res:
-        return {'message': res.split('~~')[1]}
+        sofi_content = content_convert(res.split('~~')[1])
+        return sofi_content
     elif '@@' in res:
         struct = res.split('@@')
         function_name = struct[0]
         function_values = struct[1].split('::')
         out = function_exe(function_name, function_values)
-        return {'message': out}
-
-# Django view to handle user input and respond with the appropriate JSON
+        sofi_content = content_convert(out)
+        return sofi_content
+    
 @csrf_exempt
 def chat_view(request):
     if request.method == 'POST':
-        user_input = request.POST.get('user_input')
-        
-        if user_input:
-            connector = Memory(llm())
-            out_res = connector.run(input=user_input)
-            response_data = handle_data(out_res)
-            return JsonResponse(response_data)
+        try:
+            # Parse the JSON body of the request
+            body = json.loads(request.body)  # Use request.json in Django 4.0+ if available
+            user_input = body.get('message')  # Get the user input from the 'message' field in the JSON body
 
-    return JsonResponse({'error': 'No input provided'}, status=400)
+            if not user_input:
+                return JsonResponse({'error': 'No message provided'}, status=400)
+
+            # Process the input with your function (like connector.run)
+            connector = Memory(llm())  # Assuming llm() initializes the model
+            out_res = connector.run(input=user_input)
+
+            # Handle the response (e.g., handle_data function processes it)
+            response_data = handle_data(out_res)  # Ensure this returns valid JSON or a dictionary
+            
+            if isinstance(response_data, str):
+                response_data = json.loads(response_data)  # Ensure it's a proper Python dict/list
+                
+            print(response_data, type(response_data))
+            
+            response = {
+                "messages": response_data
+            }
+            # Return the response as JSON
+            return JsonResponse(response)
+
+        except json.JSONDecodeError:
+            # Handle JSON decoding errors (if the request body was not valid JSON)
+            return JsonResponse({'error': 'Failed to parse the request body'}, status=400)
+
+    return JsonResponse({'error': 'Invalid method. Only POST requests are allowed.'}, status=405)
+
+
+# {
+#   "data": {
+#     "target": "sofi"
+#   },
+#   "dialogue": "{\"messages\":[{\"text\":\"The weather today is mild and pleasant. Perfect for a stroll!\",\"facialExpression\":\"smile\",\"animation\":\"Talking_0\"},{\"text\":\"How about we plan something outdoors?\",\"facialExpression\":\"surprised\",\"animation\":\"Talking_1\"},{\"text\":\"Let me know what activities you have in mind!\",\"facialExpression\":\"smile\",\"animation\":\"Talking_2\"}]}"
+# }
