@@ -10,7 +10,7 @@ export const ChatProvider = ({ children }) => {
   
     // Check if the message contains "@user" to determine which URL to use
     const url = message.includes("@user")
-      ? "https://virtual-gf-py.vercel.app/sofi/chat"
+      ? "https://starkshoot.fun/process/"
       : `${backendUrl}/chat`;
       console.log(url);
     const data = await fetch(url, {

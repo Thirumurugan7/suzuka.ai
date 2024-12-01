@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from base.views import *
-from base.auth import *
+from base.routes.auth import *
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
