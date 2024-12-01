@@ -31,7 +31,7 @@ def chat_with_custom_llm(user_input):
         "Authorization": "Bearer sk-lPrp67KbkKz8cojLOk0CvZvFgxGC5oOHRzRMAn6JnbQw8Nkz",  # Replace with your actual API key
     }
     payload = {
-        "model": "gpt-4o",  # Ensure the model is correct (adjust if needed)
+        "model": "gpt-4o",
         "messages": [
             {"role": "user", "content": user_input}
         ]
