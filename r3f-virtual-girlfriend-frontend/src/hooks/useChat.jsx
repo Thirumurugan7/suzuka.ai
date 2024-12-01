@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
- const backendUrl = "https://virtual-gf-js.vercel.app";
+ const backendUrl = "https://starkshoot.fun/process/";
 
 const ChatContext = createContext();
 
@@ -10,8 +10,8 @@ export const ChatProvider = ({ children }) => {
   
     // Check if the message contains "@user" to determine which URL to use
     const url = message.includes("@user")
-      ? "https://virtual-gf-py.vercel.app/sofi/chat"
-      : `${backendUrl}/chat`;
+      ? "https://starkshoot.fun/process/"
+      : `${backendUrl}/process/`;
       console.log(url);
     const data = await fetch(url, {
       method: "POST",
