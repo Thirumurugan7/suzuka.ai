@@ -13,7 +13,7 @@ from cdp.errors import ApiError, UnsupportedAssetError
 import openai
 
 # Set your OpenAI API key here
-openai.api_key = "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"
+openai.api_key = ""
 
 # Get configuration from environment variables
 API_KEY_NAME = "organizations/0e12463b-bdb4-407e-b8d0-b3f8bdeece03/apiKeys/967dfc0e-082e-499c-8309-bf4670fa75e1"
@@ -182,7 +182,7 @@ def generate_art(prompt):
         str: Status message about the art generation, including the image URL if successful
     """
     try:
-        client = OpenAI(api_key="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")
+        client = OpenAI(api_key="")
         response = client.images.generate(
             model="dall-e-3",
             prompt=prompt,

@@ -7,8 +7,8 @@ from openai import OpenAI
 import openai
 
 # Set your OpenAI API key here
-openai.api_key = "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"
-# export OPENAI_API_KEY="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"
+openai.api_key = ""
+# export OPENAI_API_KEY=""
 
 
 # this is the main loop that runs the agent in autonomous mode
@@ -48,7 +48,7 @@ def run_autonomous_loop(agent, interval=10):
 def run_openai_conversation_loop(agent):
     """Facilitates a conversation between an OpenAI-powered agent and the Based Agent."""
     client = Swarm()
-    openai_client = OpenAI(api_key="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")
+    openai_client = OpenAI(api_key="")
     messages = []
 
     print("Starting OpenAI-Based Agent conversation loop...")
