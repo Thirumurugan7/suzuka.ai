@@ -43,7 +43,7 @@ function App() {
 <OktoProvider apiKey={OKTO_CLIENT_API_KEY} buildType={BuildType.SANDBOX}>
 
 <Routes>
-<Route path="/" element={<Home />} />
+<Route path="/" element={<Home authToken={authToken} setAuthToken={setAuthToken} handleLogout={handleLogout} />} />
 <Route path="/gf" element={<> <Loader />
       <Leva hidden />
       <UI />
