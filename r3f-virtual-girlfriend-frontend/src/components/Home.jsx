@@ -38,7 +38,7 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
     style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="container mx-auto px-4 py-8">
         {/* Navigation */}
-        <nav className="flex justify-between items-center mb-12 relative">
+        <nav className="flex justify-between items-center mb-12 relative ">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8  rounded-lg overflow-hidden">
               <img src={Robotlogo} alt="Robot Logo" className="w-full h-full object-cover" />
@@ -56,21 +56,21 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
             <div className="hidden md:block">
               {!authToken ? (
                 <div className="z-50">
-                  <GoogleLogin
-                    onSuccess={handleGoogleLogin}
-                    onError={(error) => {
-                      console.log("Login Failed", error);
-                    }}
-                    useOneTap
-                    type="icon"
-                    shape="circle"
-                  />
-                   <button 
-        onClick={() => {/* Your wallet connect function */}} 
-        className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-      >
-        Connect Wallet
-      </button>
+                   <GoogleLogin
+                onSuccess={handleGoogleLogin}
+                onError={(error) => {
+                  console.log("Login Failed", error);
+                }}
+                useOneTap
+                type="standard"
+                theme="outline"
+                size="large"
+                text="continue_with"
+                shape="rectangular"
+                width="100%"
+                className="!bg-transparent !shadow-none"
+              />
+                   
                 </div>
               ) : (
                 <button 
