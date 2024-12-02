@@ -45,6 +45,7 @@ prompt = '''
     Important note: if trigger work or call any of the function then it should be 'function name'@@[list of values by using ::]} dont use 'message' structure. If it's normal conversation then use message~~reply structure.
         
     Functions:
+    `create_token`
     if user need to create the token then get the name, symbol and initial_supply from user. if you ask question then use 'message' structure
         - You should ask the user to give the inputs to the function
         - if user say create or add the data randomly or create yourself you need to add the data
