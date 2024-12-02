@@ -49,15 +49,11 @@ const Home = ({ setAuthToken, authToken, handleLogout }) => {
         console.log("authResponse.auth_token",authResponse.auth_token);
         
         setAuthToken(authResponse.auth_token);
-<<<<<<< HEAD
-        navigate("/");
-=======
 
         // Auth(authResponse.auth_token);
 
 
         navigate("/gf");
->>>>>>> e3b709e6d4e2bb8dc00377dd9c2804ceb63c2d9a
       }
       if (error) {
         console.error("Authentication error:", error);
