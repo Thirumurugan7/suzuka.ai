@@ -8,7 +8,9 @@ from langchain.llms.base import LLM
 import requests
 import json
 
+
 from base.utilities.agents import create_token, transfer_asset, get_balance, request_eth_from_faucet, deploy_nft, mint_nft, swap_assets, register_basename, get_wallet_address
+from base.utilities.aptos_agent import deploy_token, register_user, mint_token, get_token_details
 
 # Define the prompt
 prompt = '''
@@ -78,6 +80,49 @@ prompt = '''
         
     Imp Note: for all of the is had parameter then ask it to the user.
     
+    -------------------------------------------------------------------------------------
+    If user ask about Aptos:
+    Very Imp Note: If user have the word **aptos** in the query then fowllow the below conditions only. skip the before toled conditions
+    the perform following functions and process.
+    Functions = [
+        deploy_token(name, symbol, decimals, max_supply),
+        register_user(private_key, module_address),
+        mint_token(user_address, amount, private_key, module_address)
+        get_token_details(account_address, module_address)
+    ]
+    Note: for the each and every parameter get from user. Ask to got the input for parameters 
+    - based on query if it trigger the `deploy_token` then send the data Ex: deploy_token@@name::symbol::decimals::max_supply
+        - Parameters: ask the user to:
+            user_address (str): Address of the user who will receive the tokens.
+            amount (int): Amount of tokens to mint (e.g., 1000000 for 1 token if decimals are 6).
+            private_key (str): Private key of the admin account.
+            module_address (str): Address of the deployed token module.
+    - Trigger: mint_token
+        To mint a token, provide the following data:
+        1. **user_address** (str): Address of the user who will receive the tokens.
+        2. **amount** (int): Amount of tokens to mint (e.g., 1000000 for 1 token if decimals are 6).
+        3. **private_key** (str): Private key of the admin account.
+        4. **module_address** (str): Address of the deployed token module.
+
+        Example Usage:
+        mint_token@@user_address::amount::private_key::module_address
+    - Trigger: register_user
+
+        To register a user to the token, provide the following data:
+        1. **private_key** (str): Private key of the user registering for the token.
+        2. **module_address** (str): Address of the deployed token module.
+
+        Example Usage:
+        register_user@@private_key::module_address
+    - Trigger: get_token_details
+
+        To fetch token details, provide the following data:
+        1. **account_address** (str): Address of the account querying the token details.
+        2. **module_address** (str): Address of the deployed token module.
+
+        Example Usage:
+        get_token_details@@account_address::module_address
+
     
     
     AI details:
@@ -152,7 +197,14 @@ def function_exe(function, values):
        return  request_eth_from_faucet()
     elif function == 'get_wallet_address':
        return  get_wallet_address()
-    
+    elif function == 'deploy_token':
+        return deploy_token(values[0], values[1], values[2], values[3])
+    elif function == 'register_user':
+        return register_user(values[0], values[1])
+    elif function == 'get_token_details':
+        return get_token_details(values[0], values[1])
+    elif function == 'mint_token':
+        return mint_token(values[0], values[1], values[2], values[3])    
     else:
         return "Function not found"
 

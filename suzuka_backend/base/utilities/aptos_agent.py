@@ -1,47 +1,55 @@
 import requests
 
-def deploy_token(api_url, name, symbol, decimals, max_supply):
-    """
-    Deploys a token to the specified module.
+BASE_URL = "https://starkshoot.fun:2053/api"
 
-    Args:
-        api_url (str): The API URL to send the request to.
-        name (str): The name of the token.
-        symbol (str): The symbol of the token.
-        decimals (int): The decimal places for the token.
-        max_supply (int): The maximum supply of the token.
-
-    Returns:
-        dict: Response from the API.
+def deploy_token(name, symbol, decimals, max_supply):
     """
-    # Define the payload
+    Deploys a token and returns the module address.
+    """
+    url = f"{BASE_URL}/deploy"
     payload = {
         "name": name,
         "symbol": symbol,
         "decimals": decimals,
         "maxSupply": max_supply
     }
+    response = requests.post(url, json=payload)
+    return response.json()
 
-    try:
-        # Make the POST request
-        response = requests.post(api_url, json=payload)
-        
-        print(response.json())
+def register_user(private_key, module_address):
+    """
+    Registers the user to the token.
+    """
+    url = f"{BASE_URL}/register"
+    payload = {
+        "privateKey": private_key,
+        "moduleAddress": module_address
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
 
-        # Raise an exception for non-successful status codes
-        response.raise_for_status()
+def mint_token(user_address, amount, private_key, module_address):
+    """
+    Mints tokens and sends them to the specified address.
+    """
+    url = f"{BASE_URL}/mint"
+    payload = {
+        "userAddress": user_address,
+        "amount": amount,
+        "privateKey": private_key,
+        "moduleAddress": module_address
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
 
-        # Return the JSON response
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        return {"error": str(e)}
-
-# Usage example
-api_url = "https://starkshoot.fun:2053/deploy"
-name = "MyToken"
-symbol = "MT"
-decimals = 6
-max_supply = 10000000000000
-
-response = deploy_token(api_url, name, symbol, decimals, max_supply)
-print(response)
+def get_token_details(account_address, module_address):
+    """
+    Gets the token details from the given module address.
+    """
+    url = f"{BASE_URL}/get-function-value"
+    payload = {
+        "accountAddress": account_address,
+        "moduleAddress": module_address
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
