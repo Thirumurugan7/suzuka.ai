@@ -7,7 +7,10 @@ const cors = require('cors'); // Add this line
 const { ethers } = require('ethers');
 
 app.use(cors({
-    origin: '*' // Your frontend URL
+    origin: ['https://suzuka-ai-ljkp.vercel.app', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Api-Key'],
+    credentials: true
 }));
 app.use(express.json());
 
