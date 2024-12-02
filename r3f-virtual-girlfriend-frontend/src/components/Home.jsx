@@ -24,7 +24,7 @@ const Home = ({ setAuthToken, authToken, handleLogout }) => {
 
     const Auth = async(auth) => {
         try {
-            const res = await axios.post("http://localhost:3000/deploy-token",{
+            const res = await axios.post("https://suzuka-okto-be.vercel.app/deploy-token",{
 
                 "token":idToken , 
                 "auth":auth, 

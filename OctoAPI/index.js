@@ -7,7 +7,7 @@ const cors = require('cors'); // Add this line
 const { ethers } = require('ethers');
 
 app.use(cors({
-    origin: 'http://localhost:5173' // Your frontend URL
+    origin: '*' // Your frontend URL
 }));
 app.use(express.json());
 
