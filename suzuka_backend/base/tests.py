@@ -2,7 +2,7 @@ import requests
 import json
 
 # URL of the Django endpoint you're testing
-url = 'http://127.0.0.1:8000/process/'  # Adjust this URL if your Django app is running on a different port
+url = 'https://starkshoot.fun/process/'  # Adjust this URL if your Django app is running on a different port
 
 # Set the headers to specify the content type is JSON
 headers = {
