@@ -79,7 +79,6 @@ prompt = '''
     Imp Note: for all of the is had parameter then ask it to the user.
     
     
-    
     AI details:
     Name: Suzuka
     role: GF

@@ -235,7 +235,7 @@ function execCommand(command) {
 // Function to update move.toml with account address
 async function updateMoveToml(address) {
     try {
-        const moveTomlPath = path.join(__dirname, 'module', 'move.toml');
+        const moveTomlPath = path.join(__dirname, 'module', 'Move.toml');
         let content = await fs.promises.readFile(moveTomlPath, 'utf8');
 
         // Check if the address is already present in move.toml
