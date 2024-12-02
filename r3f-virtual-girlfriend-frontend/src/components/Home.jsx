@@ -8,6 +8,7 @@ import backgroundImage from "../assets/HerpSection.png";
 import Icon from "../assets/icon.png";
 import { Rocket, Zap, Link, Bird, Coins, Gauge } from 'lucide-react';
 import Frame from "../assets/Frame.png";
+import { UI } from '../components/UI';
 
 
 const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
@@ -18,9 +19,12 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
   const handleGoogleLogin = async (credentialResponse) => {
     const idToken = credentialResponse.credential;
     authenticate(idToken, async (authResponse, error) => {
+      console.log('====================================');
+      console.log("Authresponse", authResponse);
+      console.log('====================================');
       if (authResponse) {
         setAuthToken(authResponse.auth_token);
-        navigate("/home");
+        navigate("/");
       }
       if (error) {
         console.error("Authentication error:", error);
@@ -31,6 +35,14 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
   const onLogoutClick = () => {
     handleLogout();
     navigate('/');
+  };
+
+  const handleGetStarted = () => {
+    if (authToken) {
+      navigate("/home"); // Navigate to home if user is authenticated
+    } else {
+      navigate("/UI"); // Navigate to UI component if user is not authenticated
+    }
   };
 
   return (
@@ -137,7 +149,7 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
           </div>
         </div>
 
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-6" onClick={handleGetStarted}>
           <button className="bg-blue-600 text-white rounded-xl p-2">Get Started</button>
         </div>
 
