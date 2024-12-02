@@ -102,7 +102,7 @@ def content_convert(usr_content):
     data=json.dumps({
         "model": "gpt-4o",
         "messages": [
-            {'role': 'system', 'content': convert_prompt + "....if there is any address ot contract_address or tx values should show it"},
+            {'role': 'system', 'content': convert_prompt + "....if there is any address or contract_address or tx values should show it. ImP Note: if any off the address contract_address or tx values is exist add the '~~!' chrater with the output text to ideantify the address or contract_address or tx values."},
             {
                 "role": "user",
                 "content": usr_content
