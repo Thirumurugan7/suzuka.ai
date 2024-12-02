@@ -41,7 +41,7 @@ async function deleteAptosFolder() {
 // Function to remove the address from move.toml if it exists
 async function deleteMoveTomlAddress() {
     try {
-        const moveTomlPath = path.join(__dirname, 'module', 'move.toml');
+        const moveTomlPath = path.join(__dirname, 'module', 'Move.toml');
         if (fs.existsSync(moveTomlPath)) {
             let content = await fs.promises.readFile(moveTomlPath, 'utf8');
             if (content.includes('addr = ')) {
@@ -235,7 +235,7 @@ function execCommand(command) {
 // Function to update move.toml with account address
 async function updateMoveToml(address) {
     try {
-        const moveTomlPath = path.join(__dirname, 'module', 'move.toml');
+        const moveTomlPath = path.join(__dirname, 'module', 'Move.toml');
         let content = await fs.promises.readFile(moveTomlPath, 'utf8');
 
         // Check if the address is already present in move.toml
