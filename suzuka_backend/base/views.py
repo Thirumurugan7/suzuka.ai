@@ -8,7 +8,7 @@ from langchain.llms.base import LLM
 import requests
 import json
 
-from base.utilities.agents import create_token, transfer_asset, get_balance, request_eth_from_faucet, deploy_nft, mint_nft, swap_assets, register_basename
+from base.utilities.agents import create_token, transfer_asset, get_balance, request_eth_from_faucet, deploy_nft, mint_nft, swap_assets, register_basename, get_wallet_address
 
 # Define the prompt
 prompt = '''
@@ -48,6 +48,34 @@ prompt = '''
     if user need to create the token then get the name, symbol and initial_supply from user. if you ask question then use 'message' structure
         - You should ask the user to give the inputs to the function
         - if user say create or add the data randomly or create yourself you need to add the data
+        
+    - get_balance : **if use ask about the balance trigger it** get the balance of the asset_id. ask to the use to get the value for asset_id Asset identifier ("eth", "usdc") or contract address of an ERC-20 token
+        - return the data in the format of `get_balance@@asset_id`
+    - request_eth_from_faucet : if user ask the faucet then return request_eth_from_faucet+++ . also shoud show the "faucet_tx".
+    - get_wallet_address : if user ask the wallet_address then return get_wallet_address+++ .
+    - deploy_nft : deploy the nft and get the contract address. ask the user to:
+        name (str): Name of the NFT collection
+        symbol (str): Symbol of the NFT collection
+        base_uri (str): Base URI for token metadata
+        - return the data in the format of `deploy_nft@@name::symbol::base_uri
+    - mint_nft : mint the nft and get the token id. ask the user to:
+        contract_address (str): Address of the NFT contract
+        mint_to (str): Address to mint NFT to
+        - return the data in the format of `mint_nft@@contract_address::mint_to`
+    - swap_assets: swap the assets. ask the user to:
+        Args:
+        amount (Union[int, float, Decimal]): Amount of the source asset to swap
+        from_asset_id (str): Source asset identifier
+        to_asset_id (str): Destination asset identifier
+        - return the data in the format of `swap_assets@@amount::from_asset_id::to_asset_id
+    - transfer_asset: transfer the asset. ask the user to:
+        amount (Union[int, float, Decimal]): Amount to transfer
+        asset_id (str): Asset identifier ("eth", "usdc") or contract address of an ERC-20 token
+        destination_address (str): Recipient's address
+        - return the data in the format of `transfer_asset@@amount::asset_id::destination_address`
+        
+    Imp Note: for all of the is had parameter then ask it to the user.
+    
     
     AI details:
     Name: Suzuka
@@ -74,7 +102,7 @@ def content_convert(usr_content):
     data=json.dumps({
         "model": "gpt-4o",
         "messages": [
-            {'role': 'system', 'content': convert_prompt},
+            {'role': 'system', 'content': convert_prompt + "....if there is any address ot contract_address or tx values should show it"},
             {
                 "role": "user",
                 "content": usr_content
@@ -107,6 +135,21 @@ def Memory(llm) -> ConversationChain:
 def function_exe(function, values):
     if function == 'create_token':
         return create_token(values[0], values[1], values[2])
+    elif function == 'get_balance':
+        return get_balance(values[0])
+    elif function == 'deploy_nft':
+        return deploy_nft(values[0], values[1], values[2])
+    elif function == 'mint_nft':
+        return mint_nft(values[0], values[1])
+    elif function == 'swap_assets':
+        return swap_assets(values[0], values[1], values[2])
+    elif function == 'transfer_asset':
+        return transfer_asset(values[0], values[1], values[2])
+    elif function == 'request_eth_from_faucet':
+       return  request_eth_from_faucet()
+    elif function == 'get_wallet_address':
+       return  get_wallet_address()
+    
     else:
         return "Function not found"
 
@@ -118,10 +161,21 @@ def handle_data(res):
         sofi_content = content_convert(res.split('~~')[1])
         return sofi_content
     elif '@@' in res:
+        print(res)
+        
         struct = res.split('@@')
         function_name = struct[0]
-        function_values = struct[1].split('::')
+        try:
+            function_values = struct[1].split('::')
+        except:
+            function_values = []
         out = function_exe(function_name, function_values)
+        sofi_content = content_convert(out)
+        return sofi_content
+    elif '+++' in res:
+        print(res)
+        res = res.replace("+++", "")
+        out = function_exe(res, [])
         sofi_content = content_convert(out)
         return sofi_content
     
