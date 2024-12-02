@@ -100,10 +100,11 @@ export const UI = ({ hidden, ...props }) => {
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="fixed top-0 left-0 right-0 bottom-0 z-10 flex justify-between p-4 flex-col pointer-events-none">
-        <div className="self-start backdrop-blur-md bg-white bg-opacity-50 p-4 rounded-lg">
-          <h1 className="font-bold text-2xl text-purple-800">My Virtual GF</h1>
-          <p>I will always love you ❤</p>
+      <div className="self-start backdrop-blur-md bg-white bg-opacity-50 p-4 rounded-lg">
+          <h1 className="font-bold text-2xl text-purple-800">Suzuka</h1>
+          <p>The Crypto Agent</p>
         </div>
+       
         <div className="w-full flex flex-col items-end justify-center gap-4">
           <button
             onClick={() => setCameraZoomed(!cameraZoomed)}
