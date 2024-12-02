@@ -46,10 +46,10 @@ const Home = ({ setAuthToken, authToken, handleLogout }) => {
         
         setAuthToken(authResponse.auth_token);
 
-        Auth(authResponse.auth_token);
+        // Auth(authResponse.auth_token);
 
 
-        // navigate("/home");
+        navigate("/gf");
       }
       if (error) {
         console.error("Authentication error:", error);
