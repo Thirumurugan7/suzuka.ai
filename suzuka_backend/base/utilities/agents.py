@@ -16,8 +16,8 @@ import openai
 openai.api_key = ""
 
 # Get configuration from environment variables
-API_KEY_NAME = "organizations/0e12463b-bdb4-407e-b8d0-b3f8bdeece03/apiKeys/967dfc0e-082e-499c-8309-bf4670fa75e1"
-PRIVATE_KEY = '''-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIK39w9I0AF5kY+YdSQrAf3sxQsWuwPMN8DLGogABmT2foAoGCCqGSM49\nAwEHoUQDQgAEvHedQg1bYJK/9WYGvp97vVFkxVhv8Ifu6N7+1mW42SMQOqDq2q7C\nHC1xv2X6qjh4INJLrJ9uAld4YGRcVe13zw==\n-----END EC PRIVATE KEY-----\n'''
+API_KEY_NAME = "organizations/b8db4b59-3320-4a6f-bd54-1501fb99c732/apiKeys/cba0cf34-1874-4578-b039-167f4b0e338e"
+PRIVATE_KEY = '''-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEILE+ivixXdo1FhUd0mYgYK41td/NKPeSa87HkJ24xDwaoAoGCCqGSM49\nAwEHoUQDQgAEKM9NZQYrA7LOrJjSB61Sr2UR+d2bIK7vu2KA5RKeTQaaIFE1a4ac\nX6R0MYCYN+VpikU2Ye+TZZFWaxenEPdlrw==\n-----END EC PRIVATE KEY-----\n'''
 
 # Configure CDP with environment variables
 Cdp.configure(API_KEY_NAME, PRIVATE_KEY)

@@ -45,12 +45,14 @@ prompt = '''
     Important note: if trigger work or call any of the function then it should be 'function name'@@[list of values by using ::]} dont use 'message' structure. If it's normal conversation then use message~~reply structure.
         
     Functions:
+    `create_token`
     if user need to create the token then get the name, symbol and initial_supply from user. if you ask question then use 'message' structure
         - You should ask the user to give the inputs to the function
         - if user say create or add the data randomly or create yourself you need to add the data
         
-    - get_balance : **if use ask about the balance trigger it** get the balance of the asset_id. ask to the use to get the value for asset_id Asset identifier ("eth", "usdc") or contract address of an ERC-20 token
+    - get_balance : **if use ask about the balance trigger it** like [give me my balance, get my account balance , get my balance of my eth etc]. get the balance of the asset_id. ask to the use to get the value for asset_id Asset identifier ("eth", "usdc") or contract address of an ERC-20 token
         - return the data in the format of `get_balance@@asset_id`
+        - user can ask "give me the balance of eth ot usdc. here eth or usdc is asset_id
     - request_eth_from_faucet : if user ask the faucet then return request_eth_from_faucet+++ . also shoud show the "faucet_tx".
     - get_wallet_address : if user ask the wallet_address then return get_wallet_address+++ .
     - deploy_nft : deploy the nft and get the contract address. ask the user to:

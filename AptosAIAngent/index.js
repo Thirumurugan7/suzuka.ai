@@ -5,9 +5,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { AptosClient, AptosAccount, HexString } = require('aptos');
 const cors = require('cors');
+const https = require('https');
 
 const app = express();
-const port = 3000;
+const port = 2054;
+
+// Load SSL certificates
+const options = {
+    key: fs.readFileSync('/etc/letsencrypt/live/starkshoot.fun/privkey.pem'),  // Replace with your SSL key path
+    cert: fs.readFileSync('/etc/letsencrypt/live/starkshoot.fun/fullchain.pem') // Replace with your SSL certificate path
+    ///etc/letsencrypt/live/starkshoot.fun/fullchain.pem
+};
 
 app.use(cors("*"));
 
@@ -529,6 +537,14 @@ app.get('/location', (req, res) => {
 
 
 // Start the server
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+// app.listen(port, () => {
+//     console.log(`Server running on port ${port}`);
+// });
+
+// app.listen(2053, '0.0.0.0', () => {
+//     console.log("Secure server started on port 2053");
+//   });
+
+https.createServer(options, app).listen(2053, () => {
+    console.log(`HTTPS server running on port ${2053}`);
 });
