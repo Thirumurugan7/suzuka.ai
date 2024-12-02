@@ -10,10 +10,11 @@ import json
 
 
 from base.utilities.agents import create_token, transfer_asset, get_balance, request_eth_from_faucet, deploy_nft, mint_nft, swap_assets, register_basename, get_wallet_address
-from base.utilities.aptos_agent import deploy_token, register_user, mint_token, get_token_details
+from base.utilities.aptos_agent import deploy_token, register_user, mint_token, get_token_details, send_deploy_token_request
 
 # Define the prompt
 prompt = '''
+    If user talk about Base:
        functions=[
         create_token(name, symbol, initial_supply) get the name from user symbol and initial_supply make your self
         transfer_asset(amount, asset_id, destination_address),
@@ -45,16 +46,20 @@ prompt = '''
     - if user need to make normal converstation then return the json with the 'message' keywork with the respective values of response
     
     Important note: if trigger work or call any of the function then it should be 'function name'@@[list of values by using ::]} dont use 'message' structure. If it's normal conversation then use message~~reply structure.
-        
+    If user talk abput Aptos:;
+    ex: i need to deploy the token into Aptos
     Functions:
     `create_token`
     if user need to create the token then get the name, symbol and initial_supply from user. if you ask question then use 'message' structure
         - You should ask the user to give the inputs to the function
-        - if user say create or add the data randomly or create yourself you need to add the data
-        
+        - if user say create or add the data randomly or create yourself you need to add the data    
     - get_balance : **if use ask about the balance trigger it** like [give me my balance, get my account balance , get my balance of my eth etc]. get the balance of the asset_id. ask to the use to get the value for asset_id Asset identifier ("eth", "usdc") or contract address of an ERC-20 token
         - return the data in the format of `get_balance@@asset_id`
         - user can ask "give me the balance of eth ot usdc. here eth or usdc is asset_id
+     
+    -The following is important so take a carefull look at with it :
+        if user ask or say let's deploy the nobita token  then call the send_deploy_token_request Ex: send_deploy_token_request+++.
+    
     - request_eth_from_faucet : if user ask the faucet then return request_eth_from_faucet+++ . also shoud show the "faucet_tx".
     - get_wallet_address : if user ask the wallet_address then return get_wallet_address+++ .
     - deploy_nft : deploy the nft and get the contract address. ask the user to:
@@ -122,8 +127,6 @@ prompt = '''
 
         Example Usage:
         get_token_details@@account_address::module_address
-
-    
     
     AI details:
     Name: Suzuka
@@ -195,6 +198,8 @@ def function_exe(function, values):
         return transfer_asset(values[0], values[1], values[2])
     elif function == 'request_eth_from_faucet':
        return  request_eth_from_faucet()
+    elif function == 'send_deploy_token_request':
+       return  send_deploy_token_request()
     elif function == 'get_wallet_address':
        return  get_wallet_address()
     elif function == 'deploy_token':
