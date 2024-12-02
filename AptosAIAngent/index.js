@@ -2,9 +2,24 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const bodyParser = require('body-parser');
+const { AptosClient, AptosAccount, HexString } = require('aptos');
+const cors = require('cors');
+const https = require('https');
 
 const app = express();
-const port = 3000;
+const port = 2054;
+
+// Load SSL certificates
+const options = {
+    key: fs.readFileSync('/etc/letsencrypt/live/starkshoot.fun/privkey.pem'),  // Replace with your SSL key path
+    cert: fs.readFileSync('/etc/letsencrypt/live/starkshoot.fun/fullchain.pem') // Replace with your SSL certificate path
+    ///etc/letsencrypt/live/starkshoot.fun/fullchain.pem
+};
+
+app.use(cors("*"));
+
+app.use(bodyParser.json());
 
 // Function to remove the .aptos folder if it exists
 async function deleteAptosFolder() {
@@ -26,7 +41,7 @@ async function deleteAptosFolder() {
 // Function to remove the address from move.toml if it exists
 async function deleteMoveTomlAddress() {
     try {
-        const moveTomlPath = path.join(__dirname, 'module', 'move.toml');
+        const moveTomlPath = path.join(__dirname, 'module', 'Move.toml');
         if (fs.existsSync(moveTomlPath)) {
             let content = await fs.promises.readFile(moveTomlPath, 'utf8');
             if (content.includes('addr = ')) {
@@ -50,7 +65,7 @@ async function deleteMoveTomlAddress() {
 async function initAptos() {
     return new Promise((resolve, reject) => {
         const modulePath = path.join(__dirname, 'module');
-        const init = spawn('aptos', ['init', '--network', 'devnet'], {
+        const init = spawn('aptos', ['init', '--network', 'testnet'], {
             stdio: ['pipe', 'pipe', 'pipe'],
             shell: true,
             cwd: modulePath
@@ -220,7 +235,7 @@ function execCommand(command) {
 // Function to update move.toml with account address
 async function updateMoveToml(address) {
     try {
-        const moveTomlPath = path.join(__dirname, 'module', 'move.toml');
+        const moveTomlPath = path.join(__dirname, 'module', 'Move.toml');
         let content = await fs.promises.readFile(moveTomlPath, 'utf8');
 
         // Check if the address is already present in move.toml
@@ -264,8 +279,136 @@ async function getAccountAddress() {
     }
 }
 
+// Function to get account private key from .aptos/config.yaml
+async function getAccountPrivateAddress() {
+    try {
+        const configPath = path.join(__dirname, 'module', '.aptos', 'config.yaml');
+        const config = await fs.promises.readFile(configPath, 'utf8');
+        const privateKeyLine = config.split('\n').find(line => line.trim().startsWith('private_key:'));
+        if (privateKeyLine) {
+            const privateAddress = privateKeyLine.split('"')[1];
+            if (privateAddress && privateAddress[1]) {
+                return privateAddress;
+            }
+        }
+        throw new Error('Account private key not found in config');
+    } catch (error) {
+        console.error('Error reading account private key:', error);
+        if (error.code === 'ENOENT') {
+            // Check if the .aptos folder already exists
+            const aptosDir = path.join(__dirname, 'module', '.aptos');
+            if (fs.existsSync(aptosDir)) {
+                console.log('.aptos folder already exists, skipping Aptos initialization.');
+            } else {
+                throw new Error(`Config file not found at ${configPath}. Make sure .aptos/config.yaml exists in the module directory.`);
+            }
+        }
+        throw error;
+    }
+}
+
+
+
+const client = new AptosClient('https://api.testnet.aptoslabs.com/v1');
+// const moduleAddress = "0x85da3573f71a7059b4c5eed699e3caf6b2c4baa9933549b264c671def594a2f4";
+
+function getAptosAccount(privateKeyHex) {
+    const privateKeyBytes = Buffer.from(privateKeyHex, 'hex');
+    if (privateKeyBytes.length !== 32) {
+      throw new Error('Private key must be 32 bytes long.');
+    }
+  
+    // Create AptosAccount directly
+    return new AptosAccount(privateKeyBytes);
+  }
+
+const setCustomToken = async (name, symbol, decimals, maxSupply, privateKey, moduleAddress) => {
+    try {
+      const account = getAptosAccount(privateKey.startsWith('0x') ? privateKey.slice(2) : privateKey);
+      console.log("Module address", moduleAddress);
+      const payload = {
+        function: `${moduleAddress}::meme::initialize_token`,
+        type_arguments: [],
+        arguments: [name, symbol, decimals, maxSupply],
+      };
+
+      const txnRequest = await client.generateTransaction(account.address(), payload);
+      const signedTxn = await client.signTransaction(account, txnRequest);
+      const response = await client.submitTransaction(signedTxn);
+
+      await client.waitForTransaction(response.hash);
+      return { message: "Token initialized successfully", hash: response.hash };
+    } catch (error) {
+      console.error("Error initializing token:", error);
+      throw error;
+    }
+};
+
+const setRegister = async (privateKey, moduleAddress) => {
+    try {
+        const account = getAptosAccount(privateKey.startsWith('0x') ? privateKey.slice(2) : privateKey);
+        console.log("Module address", moduleAddress);
+
+        const payload = {
+            function: `${moduleAddress}::meme::register`,
+            type_arguments: [],
+            arguments: [],
+        };
+
+        const txnRequest = await client.generateTransaction(account.address(), payload);
+        const signedTxn = await client.signTransaction(account, txnRequest);
+        const response = await client.submitTransaction(signedTxn);
+
+        await client.waitForTransaction(response.hash);
+
+        return {
+            message: "Token registered successfully",
+            hash: response.hash
+        };
+    } catch (error) {
+        console.error("Error registering token:", error);
+        throw error;
+    }
+};
+
+const Mint = async (userAddress, amount, privateKey, moduleAddress) => {
+    try {
+        const account = getAptosAccount(privateKey.startsWith('0x') ? privateKey.slice(2) : privateKey);
+        console.log("Module address", moduleAddress);
+
+        const payload = {
+            function: `${moduleAddress}::meme::mint`,
+            type_arguments: [],
+            arguments: [userAddress,amount],
+        };
+
+        const txnRequest = await client.generateTransaction(account.address(), payload);
+        const signedTxn = await client.signTransaction(account, txnRequest);
+        const response = await client.submitTransaction(signedTxn);
+
+        await client.waitForTransaction(response.hash);
+
+        return {
+            message: "Token minted successfully",
+            hash: response.hash
+        };
+    } catch (error) {
+        console.error("Error registering token:", error);
+        throw error;
+    }
+};
+
+
+  
+  
+  app.get('/', (req, res) => {
+      res.send('Server is working!');
+    });
+
+
 // Endpoint to trigger deployment
 app.post('/deploy', async (req, res) => {
+    const { name, symbol, decimals, maxSupply } = req.body;
     try {
         // Remove the .aptos folder if it exists
         await deleteAptosFolder();
@@ -279,7 +422,7 @@ app.post('/deploy', async (req, res) => {
         
         // Longer delay to ensure file system updates are complete
         console.log('Waiting for config file to be written...');
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Increased delay to 5 seconds
         
         // Get the account address from .aptos/config.yaml
         const address = await getAccountAddress();
@@ -292,10 +435,17 @@ app.post('/deploy', async (req, res) => {
         console.log('Publishing contract...');
         const publishOutput = await execCommand('aptos move publish');
         
+        // Get the account private key from .aptos/config.yaml
+        const privateAddress = await getAccountPrivateAddress();
+        console.log("private key", privateAddress);
+        
+        const tokenInitResponse = await setCustomToken(name, symbol, decimals, maxSupply, privateAddress, `0x${address}`);
+
         res.json({
             success: true,
             address,
-            publishOutput
+            publishOutput,
+            tokenInitResponse
         });
     } catch (error) {
         console.error('Deployment error:', error);
@@ -306,6 +456,77 @@ app.post('/deploy', async (req, res) => {
     }
 });
 
+app.post('/api/get-function-value', async (req, res) => {
+    const { accountAddress, moduleAddress } = req.body;
+  
+    try {
+      const resourceType = `${moduleAddress}::meme::TokenInfo`;
+      const response = await client.getAccountResource(accountAddress, resourceType);
+      console.log("Resource data:", response.data);
+  
+      const nameHex = response.data.name.replace(/^0x/, "");
+      const symbolHex = response.data.symbol.replace(/^0x/, "");
+  
+      const name = Buffer.from(nameHex, "hex").toString("utf-8");
+      const symbol = Buffer.from(symbolHex, "hex").toString("utf-8");
+  
+      const currentSupply = parseInt(response.data.current_supply, 10);
+      const maxSupply = parseInt(response.data.max_supply, 10);
+      const remainingSupply = maxSupply - currentSupply;
+      const decimals = response.data.decimals;
+  
+
+        res.status(200).json({
+            name,
+            symbol,
+            currentSupply,
+            remainingSupply,
+            decimals,
+            maxSupply
+        });
+    } catch (error) {
+      console.error("Error fetching function value:", error);
+      res.status(500).json({ error: "Error fetching function value", details: error.message });
+    }
+  });
+
+  app.post('/api/register', async (req, res) => {
+    const { privateKey, moduleAddress } = req.body;
+
+    try {
+        const response = await setRegister(privateKey, moduleAddress);
+        res.status(200).json(response);
+    } catch (error) {
+        console.error("Error registering token:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+  app.post('/api/mint', async (req, res) => {
+    const { userAddress, amount, privateKey, moduleAddress } = req.body;
+
+    try {
+        const response = await Mint(userAddress, amount, privateKey, moduleAddress);
+        res.status(200).json(response);
+    } catch (error) {
+        console.error("Error registering token:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+  app.post('/api/getwalletbalance', async (req, res) => {
+    const { userAddress, amount, privateKey, moduleAddress } = req.body;
+
+    try {
+        const response = await Mint(userAddress, amount, privateKey, moduleAddress);
+        res.status(200).json(response);
+    } catch (error) {
+        console.error("Error registering token:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+  
+
 app.get('/location', (req, res) => {
     res.json({
         currentFile: __filename,
@@ -314,7 +535,16 @@ app.get('/location', (req, res) => {
     });
 });
 
+
 // Start the server
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+// app.listen(port, () => {
+//     console.log(`Server running on port ${port}`);
+// });
+
+// app.listen(2053, '0.0.0.0', () => {
+//     console.log("Secure server started on port 2053");
+//   });
+
+https.createServer(options, app).listen(2053, () => {
+    console.log(`HTTPS server running on port ${2053}`);
 });
