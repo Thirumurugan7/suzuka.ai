@@ -39,7 +39,7 @@ function App() {
       <Router>
         <OktoProvider apiKey={OKTO_CLIENT_API_KEY} buildType={BuildType.SANDBOX}>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home setAuthToken={setAuthToken} authToken={authToken} handleLogout={handleLogout} />} />
             <Route path="/gf" element={
               <>
                 <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 10 }}>

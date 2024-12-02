@@ -5,22 +5,51 @@ import { GoogleLogin } from "@react-oauth/google";
 import { MessageSquare, RefreshCw, Settings, Menu } from 'lucide-react';
 import Robotlogo from "../assets/robot 1.png";
 import backgroundImage from "../assets/HerpSection.png";
+import axios from "axios";
 import Icon from "../assets/icon.png";
 import { Rocket, Zap, Link, Bird, Coins, Gauge } from 'lucide-react';
 import Frame from "../assets/Frame.png";
 
-
-const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
+const Home = ({ setAuthToken, authToken, handleLogout }) => {
   const navigate = useNavigate();
   const { authenticate } = useOkto();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleGoogleLogin = async (credentialResponse) => {
     const idToken = credentialResponse.credential;
+
+    console.log(
+        "idtoken", idToken
+    );
+
+    const Auth = async(auth) => {
+        try {
+            const res = await axios.post("https://suzuka-okto-be.vercel.app/deploy-token",{
+
+                "token":idToken , 
+                "auth":auth, 
+            })
+
+            console.log("res",res);
+            
+        } catch (error) {
+            console.log("errro",error);
+            
+        }
+    }
+
+    
     authenticate(idToken, async (authResponse, error) => {
       if (authResponse) {
+        console.log("authResponse",authResponse);
+        console.log("authResponse.auth_token",authResponse.auth_token);
+        
         setAuthToken(authResponse.auth_token);
-        navigate("/home");
+
+        Auth(authResponse.auth_token);
+
+
+        // navigate("/home");
       }
       if (error) {
         console.error("Authentication error:", error);
@@ -208,4 +237,4 @@ const LoginPage = ({ setAuthToken, authToken, handleLogout }) => {
   );
 };
 
-export default LoginPage;
+export default Home;
