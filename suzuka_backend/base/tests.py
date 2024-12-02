@@ -1,30 +1,43 @@
 import requests
+import json
 
-BASE_URL = 'http://127.0.0.1:8000/process/'  # Ensure this matches the actual URL in your Django project
+# URL of the Django endpoint you're testing
+url = 'http://127.0.0.1:8000/process/'  # Adjust this URL if your Django app is running on a different port
 
-def test_chat():
-    with requests.Session() as session:  # Using a session to maintain cookies and state
-        while True:
-            # Get user input for the next message
-            user_input = input("You: ")
+# Set the headers to specify the content type is JSON
+headers = {
+    'Content-Type': 'application/json',
+}
 
-            # Exit condition
-            if user_input.lower() in ['exit', 'quit']:
-                print("Exiting chat...")
-                break
+# Start the conversation loop
+while True:
+    # Get the user's message
+    user_input = input("You: ")  # This will allow the user to type a message
 
-            # Send the user input to the Django endpoint using the session
-            response = session.post(BASE_URL, data={'user_input': user_input})
-            
-            # Print the raw response content to inspect it
-            print("Raw Response Text:", response.text)
+    if user_input.lower() in ['exit', 'quit', 'bye']:  # Exit condition for the loop
+        print("Exiting chat. Goodbye!")
+        break
 
-            # Try to parse JSON if response is valid
-            try:
-                response_data = response.json()
-                print("Response:", response_data)
-            except requests.exceptions.JSONDecodeError:
-                print("Failed to decode JSON")
+    # Prepare the payload with the user's message
+    payload = {
+        'message': user_input
+    }
 
-if __name__ == "__main__":
-    test_chat()
+    try:
+        # Send the POST request to the Django server
+        response = requests.post(url, data=json.dumps(payload), headers=headers)
+
+        # Check if the response is successful (status code 200)
+        if response.status_code == 200:
+            # Parse the JSON response and display the chatbot's reply
+            response_data = response.json()
+            if 'messages' in response_data:
+                # Assuming the first message in the 'messages' array is the chatbot's response
+                chatbot_message = response_data['messages'][0]['text']
+                print(f"Chatbot: {chatbot_message}")
+            else:
+                print("Chatbot response was not in the expected format.")
+        else:
+            print(f"Error: Received unexpected status code {response.status_code} from the server.")
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")

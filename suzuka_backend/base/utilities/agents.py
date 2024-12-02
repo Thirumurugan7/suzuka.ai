@@ -76,6 +76,10 @@ faucet = agent_wallet.faucet()
 print(f"Faucet transaction: {faucet}")
 print(f"Agent wallet address: {agent_wallet.default_address.address_id}")
 
+def get_wallet_address():
+    print("worked: ", agent_wallet.default_address.address_id)
+    return f" your wallet address is : {agent_wallet.default_address.address_id} "
+
 
 # Function to create a new ERC-20 token
 def create_token(name, symbol, initial_supply):
