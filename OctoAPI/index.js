@@ -310,22 +310,55 @@ const abi = [
 const processedTokens = new Set();
 
 
-// Endpoint to deploy module and initialize token
-app.post('/deploy-token', async (req, res) => {
 
-        const { token } = req.body;
+app.post('/deploy-token', async (req, res) => {
+    try {
+        const { token , auth } = req.body;
         
         if (!token) {
             return res.status(400).json({ error: 'Token is required' });
         }
 
-        // Check if token was already processed
         if (processedTokens.has(token)) {
             return res.status(400).json({ error: 'Token already processed' });
         }
 
+        // Authentication request
+        const authResponse = await axios({  // renamed from response to authResponse
+            method: 'post',
+            url: 'https://sandbox-api.okto.tech/api/v2/authenticate',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Api-Key': 'ac9502db-13f0-4074-8ae0-6dc10ad2d0c5'
+            },
+            data: {
+                id_token: token
+            }
+        });
+
+        console.log("auth response", authResponse.data);
+        processedTokens.add(token);
+
+        const contractAddress = "0x7ECd045257107c84129BCce9DBa8feb211b4a7E7";
+        const authToken = authResponse.data.data.auth_token;  // using authResponse instead of response
+
+        // Create contract data
+        const iface = new ethers.utils.Interface(abi);
+        const data = iface.encodeFunctionData("deployERC20", [
+            "thiru",
+            "ts",
+            ethers.utils.parseEther('100000')  // directly use string for better precision
+        ]);
+
+        console.log("data", data);
+        console.log("Auth token", auth);
+
+        // Get wallets
         try {
-            const response = await axios({
+
+            console.log("authToken", authToken.trim());
+
+            const authResponses = await axios({  // renamed from response to authResponse
                 method: 'post',
                 url: 'https://sandbox-api.okto.tech/api/v2/authenticate',
                 headers: {
@@ -336,85 +369,77 @@ app.post('/deploy-token', async (req, res) => {
                     id_token: token
                 }
             });
-
-            console.log("res",response.data);
-            
-            // Add token to processed set
-            processedTokens.add(token);
-            
-            // Set expiry for the token in cache (e.g., after 1 hour)
-            // setTimeout(() => {
-            //     processedTokens.delete(token);
-            // }, 3600000); // 1 hour
-
-
-            const contractAddress = "0x7ECd045257107c84129BCce9DBa8feb211b4a7E7";
-
-
-            const tokenName = "My Token";
-            const tokenSymbol = "MTK";
-        
-const supply = 100000;
-const iface = new ethers.utils.Interface(abi);
-            const data = iface.encodeFunctionData("deployERC20", [
-                "thiru",
-                "ts",
-                ethers.utils.parseEther(supply.toString())
-            ]);
-         
-
-            console.log("data",data);
-            
-            const authToken = response.data.data.auth_token;
-
-            console.log("Auth token", authToken);
-            
-            try {
-                const wallets = await axios ({
-                    method: 'post',
-                    url: "https://sandbox-api.okto.tech/api/v1/wallet",
-                    headers:{
-                        'Authorization': `Bearer ${response.data.data.auth_token}`,
-                    }  
-
-                })
-
-                console.log("wallets",wallets.data)
-            } catch (error) {
-                console.log("error i ngeting ", error);
-                
-            }
-            try {
-                const response = await axios({
-                    method: 'post',
-                    url: 'https://sandbox-api.okto.tech/api/v1/rawtransaction/execute',
-                    headers: {
-                        'Authorization': `Bearer ${response.data.data.auth_token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    data: {
-                        network_name: "BASE",
-                        transaction: {
-                            from: "0x89E2600ba719F3637C154D88Cfc941FC94fF9c7f", // Replace with your wallet address
-                            to: contractAddress,
-                            data: data,
-                            value: "0x0" // No value needed for this call
-                        }
-                    }
-                });
-        
-                console.log('Transaction submitted:', response.data);
-            } catch (error) {
-                console.log("erroo in  conrracrt",error);
-                
-            }
-
-            return res.json(response.data);
-        } catch (error) {
-            console.log("Error in auth", error);
-            return res.status(500).json({ error: 'Authentication failed' });
-        }
     
+            console.log("auth response", authResponses.data);
+            const authToken1 = authResponses.data.data.auth_token;  // using authResponse instead of response
+
+
+            
+            const walletsResponse = await axios({  // renamed to walletsResponse
+                method: 'post',
+                url: "https://sandbox-api.okto.tech/api/v1/wallet",
+                headers: {
+                    'Authorization': `Bearer ${authToken1}`
+                }
+            });
+            console.log("wallets", walletsResponse.data.data.wallets);
+const networks = walletsResponse.data.data.wallets;
+            const baseAddress = networks.find(network => network.network_name === 'BASE').address;
+console.log(baseAddress); 
+
+  // Execute transaction
+        try {
+
+            const authResponses = await axios({  // renamed from response to authResponse
+                method: 'post',
+                url: 'https://sandbox-api.okto.tech/api/v2/authenticate',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Api-Key': 'ac9502db-13f0-4074-8ae0-6dc10ad2d0c5'
+                },
+                data: {
+                    id_token: token
+                }
+            });
+    
+            console.log("auth response", authResponses.data);
+            const authToken1 = authResponses.data.data.auth_token;  // using authResponse instead of response
+
+            const txResponse = await axios({  // renamed to txResponse
+                method: 'post',
+                url: 'https://sandbox-api.okto.tech/api/v1/rawtransaction/execute',
+                headers: {
+                    'Authorization': `Bearer ${authToken1}`,
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    network_name: "BASE",
+                    transaction: {
+                        from: baseAddress,
+                        to: contractAddress,
+                        data: data,
+                        value: "0x"
+                    }
+                }
+            });
+
+            console.log('Transaction submitted:', txResponse.data);
+            return res.json(txResponse.data);  // Return the transaction response
+            
+        } catch (error) {
+            console.log("Error in contract:", error.response?.data || error);
+            return res.status(500).json({ error: 'Contract execution failed' });
+        }
+        } catch (error) {
+            console.log("Error in getting wallets:", error.response?.data || error);
+        }
+
+      
+
+    } catch (error) {
+        console.log("Error in auth:", error.response?.data || error);
+        return res.status(500).json({ error: 'Authentication failed' });
+    }
 });
 
 const PORT = process.env.PORT || 3000;

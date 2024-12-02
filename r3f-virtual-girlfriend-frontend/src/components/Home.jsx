@@ -22,11 +22,12 @@ const Home = ({ setAuthToken, authToken, handleLogout }) => {
         "idtoken", idToken
     );
 
-    const Auth = async() => {
+    const Auth = async(auth) => {
         try {
             const res = await axios.post("http://localhost:3000/deploy-token",{
 
-                "token":idToken
+                "token":idToken , 
+                "auth":auth, 
             })
 
             console.log("res",res);
@@ -37,7 +38,6 @@ const Home = ({ setAuthToken, authToken, handleLogout }) => {
         }
     }
 
-    Auth()
     
     authenticate(idToken, async (authResponse, error) => {
       if (authResponse) {
@@ -46,6 +46,7 @@ const Home = ({ setAuthToken, authToken, handleLogout }) => {
         
         setAuthToken(authResponse.auth_token);
 
+        Auth(authResponse.auth_token);
 
 
         // navigate("/home");
